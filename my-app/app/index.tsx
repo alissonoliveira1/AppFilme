@@ -1,8 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { Text, View,StatusBar, ScrollView, SafeAreaView, Image, Dimensions, StyleSheet, } from "react-native";
-import { Link } from 'expo-router';
-import api from "./services";
-
+import { useRouter } from 'expo-router';
+import {
+  Text,
+  View,
+  StatusBar,
+  ScrollView,
+  SafeAreaView,
+  Image,
+  Dimensions,
+  StyleSheet,
+  TouchableOpacity
+} from 'react-native';
+import api from './services';
 const { width } = Dimensions.get('window');
 
 interface TVShow {
@@ -14,19 +23,24 @@ interface TVShow {
 }
 
 export default function Index() {
- const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [movies, setMovies] = useState<TVShow[]>([]);
+  const router = useRouter();
+ const destaque = movies.slice(0, 1);
+ 
 
   useEffect(() => {
+    
     const getMovies = async () => {
       try {
         const response = await api.get('discover/tv', {
           params: {
             api_key: '9f4ef628222f7685f32fc1a8eecaae0b',
-            language: 'pt-BR'
-          }
+            language: 'pt-BR',
+            with_genres: 16,
+          },
         });
-        setLoading(false)
+        setLoading(false);
         setMovies(response.data.results);
       } catch (error) {
         console.log(error);
@@ -36,42 +50,91 @@ export default function Index() {
     getMovies();
   }, []);
 
+  
 
-
-  const destaque = movies.slice(0, 1); 
-  if(loading){
-    return(
-      <View style={{flex:1, justifyContent: 'center', alignItems: 'center'}}>
-        <Text style={{color: 'white'}}>Carregando...</Text>
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text style={{ color: 'white' }}>Carregando...</Text>
       </View>
-    )
+    );
   }
+
   return (
-    
     <SafeAreaView style={styles.container2}>
-      <StatusBar  barStyle={'light-content'}  />
-      <ScrollView style={{top:0}}>
+      <ScrollView >
         <View style={styles.container}>
           {destaque.map((movie) => (
-  
-            <View  style={styles.imageContainer2}>
-                        <Link key={movie.id} style={styles.link} href={`user/:${movie.id}`}>
-              <Image
+            <View style={styles.imageContainer2} key={movie.id}>
+             <TouchableOpacity onPress={() => router.push(`/info?id=${movie.id}`)} >
+                
+                  <Image
+                  id='img'
+                    style={styles.image2}
+                    source={{ uri: `https://image.tmdb.org/t/p/original/${movie.poster_path}` }}
+                  />
               
-                style={styles.image2}
-                source={{ uri: `https://image.tmdb.org/t/p/original/${movie.poster_path}` }}
-              />
-              </Link>
+                </TouchableOpacity>
             </View>
-           
           ))}
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
+        </View>
+
+        <View>
+          <Text style={styles.text}>Destaques</Text>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.horizontalScroll}
+          >
+         
+            {movies.map((movie) => (
+              <View  key={movie.id} style={styles.imageContainer}>
+                <TouchableOpacity onPress={() => router.push(`/info?id=${movie.id}`)} >
+                  <Image
+                    style={styles.image}
+                    source={{ uri: `https://image.tmdb.org/t/p/original/${movie.poster_path}` }}
+                  />
+            </TouchableOpacity>
+              </View>
+            ))}
+          </ScrollView>
+        </View>
+
+        <View>
+          <Text style={styles.text}>Filmes de ação</Text>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.horizontalScroll}
+          >
             {movies.map((movie) => (
               <View key={movie.id} style={styles.imageContainer}>
-                <Image
-                  style={styles.image}
-                  source={{ uri: `https://image.tmdb.org/t/p/original/${movie.poster_path}` }}
-                />
+                    <TouchableOpacity onPress={() => router.push(`/info?id=${movie.id}`)} >
+                  <Image
+                    style={styles.image}
+                    source={{ uri: `https://image.tmdb.org/t/p/original/${movie.poster_path}` }}
+                  />
+            </TouchableOpacity>
+              </View>
+            ))}
+          </ScrollView>
+        </View>
+
+        <View>
+          <Text style={styles.text}>Filmes de terror</Text>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.horizontalScroll}
+          >
+            {movies.map((movie) => (
+              <View key={movie.id} style={styles.imageContainer}>
+                    <TouchableOpacity onPress={() => router.push(`/info?id=${movie.id}`)} >
+                  <Image
+                    style={styles.image}
+                    source={{ uri: `https://image.tmdb.org/t/p/original/${movie.poster_path}` }}
+                  />
+            </TouchableOpacity>
               </View>
             ))}
           </ScrollView>
@@ -84,19 +147,18 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     marginTop: 30,
-    
-    zIndex: 1,
+
   },
   container2: {
     flex: 1,
     backgroundColor: 'rgb(0, 63, 82)',
-    zIndex: 1,
   },
   horizontalScroll: {
-    marginTop: 80,
+    marginTop: 10,
   },
   imageContainer: {
-    marginRight: 10,
+    marginLeft: 10,
+    marginRight: 3,
   },
   image: {
     width: width * 0.3,
@@ -104,24 +166,27 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   imageContainer2: {
-    flex:1,
-    position: 'relative',
     top: 0,
-    height: 660,
+    height: 436,
+    position: 'relative',
     justifyContent: 'flex-start',
     alignItems: 'center',
   },
   image2: {
-    top:0,
-    position: 'absolute',
     width: width * 0.85,
     height: 436,
     borderRadius: 8,
-    backgroundColor: 'rgba(255, 3, 3, 0.5)',
+    borderStyle: 'solid',
+    borderColor: 'rgb(112, 112, 112)',
+    borderWidth: 2,
   },
-  link:{
-    flex:1,
+  link: {
+    flex: 1,
+  },
+  text: {
+    color: 'white',
+    marginTop: 10,
+    marginLeft: 10,
    
-    
   },
 });
