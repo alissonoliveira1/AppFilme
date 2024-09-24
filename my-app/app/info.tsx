@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useRef } from "react";
-import BottomSheet from '@gorhom/bottom-sheet';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
+
 import { useGlobalSearchParams } from "expo-router";
 import api from "./services";
 import {
@@ -35,6 +35,7 @@ export default function Info() {
     name?: string;
     overview?: string;
     poster_path?: string;
+    backdrop_path?: string;
     genres?: [{ id: number; name: string }];
     seasons?: [{ season_number: number; name: string }];
     number_of_seasons?: number;
@@ -141,13 +142,13 @@ export default function Info() {
     <TouchableOpacity onPress={() => handleSeasonSelect(item.season_number, item.name)}>
       <View style={styles.temps}>
         <Text style={styles.tempname}>{item.name}</Text>
-        <Text>Episódios: {item.episode_count}</Text>
+       
       </View>
     </TouchableOpacity>
   );
 
   return (
-    <GestureHandlerRootView>
+ 
    <SafeAreaView style={{backgroundColor: "rgb(0, 63, 82)",}}>
         <ScrollView scrollEnabled={!isPressed}  style={{backgroundColor: "rgb(0, 63, 82)",}}>
      <View style={styles.container}>
@@ -155,7 +156,7 @@ export default function Info() {
        <View>
        <Image
           source={{
-            uri: `https://image.tmdb.org/t/p/w500${dados.poster_path}`,
+            uri: `https://image.tmdb.org/t/p/w500${dados.backdrop_path}`,
           }}
           style={styles.image}
         />
@@ -172,38 +173,36 @@ export default function Info() {
        </View>
        
 
+        <View style={styles.info}>
         <Text style={styles.textTemps}>{dados.number_of_seasons} temporadas {ano}</Text>
+        </View>
 
 
        
-        <BottomSheet
-       ref={bottomSheetRef}
-       index={0} // Inicia fechado
-        snapPoints={['85%', '100%']} 
-         style={{backgroundColor: "rgb(0, 63, 82)"}}
-         
-       >
-<View style={styles.containerTemp3}>
-<ScrollView scrollEnabled={true} contentContainerStyle={{ flexGrow: 1,zIndex:5 }}>
-      <FlatList
-        data={seasons}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={renderSeason}
-        ListEmptyComponent={<Text>Nenhuma temporada encontrada.</Text>}
-        scrollEnabled={false} // Desative o scroll do FlatList
-      />
-    </ScrollView>
-    </View>
-       </BottomSheet>
+       {isPressed && (
+       
+  <View style={styles.containerTemp3}>
+  
+        <FlatList
+          data={seasons}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderSeason}
+          ListEmptyComponent={<Text>Nenhuma temporada encontrada.</Text>}
+          scrollEnabled={true} // Desative o scroll do FlatList
+        />
+     
+      </View>
+   
+       )}
 
 
         
           <View style={styles.ViewOverVW}>
           <Text style={styles.textOverVW}>{dados.overview}</Text>
         </View>
-      
+      <View style={styles.textoEps}><Text style={styles.textEps}>Episodios</Text></View>
         <View style={styles.containerEps}>
-          <Text style={styles.textEps}>Episodios</Text>
+          
 
           <TouchableOpacity onPress={() => toggleStyle()}>
           <View style={styles.button}>
@@ -224,25 +223,34 @@ export default function Info() {
     </View> 
     </ScrollView>
    </SafeAreaView>
-   </GestureHandlerRootView>
+   
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
+    alignItems: "flex-start",
     backgroundColor: "rgb(0, 63, 82)",
   
   },
+  info:{
+    marginLeft: 10,
 
+    width: width * 0.98,
+    flexDirection: "row",
+    flex:1,
+  },
   logo: {
-    width: 300,
-    height: 50,
+    width: 200,
+    height: 100,
     resizeMode: "contain",
   },
   containerLogo: {
     flex:1,
+    position:"relative",
+    top:-45,
+    
     width: width,
     alignItems: "flex-start",
     justifyContent: "flex-start",
@@ -251,7 +259,8 @@ const styles = StyleSheet.create({
   },
   VwLogo: {
     flex:1,
-    width: width,
+    marginLeft: 10,
+    width: width ,
     alignItems: "flex-start",
     justifyContent: "flex-start",
   
@@ -261,8 +270,9 @@ const styles = StyleSheet.create({
     color: "#ffffff",
   },
   textTemps: {
+    fontWeight: "bold",
     fontSize: 12,
-    color: "#ffffff",
+    color: "#d4d4d4",
   },
   textOverVW: {
    zIndex: -1,
@@ -270,26 +280,27 @@ const styles = StyleSheet.create({
     color: "#ffffff",
   },
   ViewOverVW: {
-    width: width * 0.9,
+    width: width * 0.98,
     marginLeft:10,
     
   },
   image: {
-    width: 200,
+    width: width,
     height: 300,
+    
     resizeMode: "cover",
   },
 
   containerTemp3: {
+    position: "absolute",
+    top:0,
     alignItems: "center",
-    justifyContent: "flex-start",
+    justifyContent: "center",
     width: "100%",
-    height: "50%",
-    paddingTop: 20,
+    height: "26%",
+    paddingTop: 40,
     paddingBottom: 20,
-    borderTopStartRadius: 20,
-    borderTopEndRadius: 20,
-    backgroundColor: "rgb(0, 48, 70)",
+    backgroundColor: "rgba(0, 0, 0, 0.911)",
   },
 
   button: {
@@ -297,7 +308,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     justifyContent: "center",
     alignItems: "center",
-    width: width * 0.9,
+    width: width * 0.98,
     height: 50,
     backgroundColor: "rgb(7, 32, 46)",
     borderRadius: 8,
@@ -306,21 +317,22 @@ const styles = StyleSheet.create({
   textButton: {
     fontSize: 16,
     color: "#ffffff",
+    fontWeight: "bold",
   },
 
   temps: {
-    width: 300,
+  
     height: 50,
-    borderRadius: 10,
     flexDirection: "row",
     alignItems: "center",
     marginVertical: 5,
-    paddingLeft: 30,
-    backgroundColor: "rgb(5, 22, 27)",
+    paddingLeft: 0,
+    justifyContent: "center",
   },
 
   tempname: {
-    fontSize: 16,
+    fontSize: 18,
+    fontWeight: "bold",
     color: "#ffffff",
   },
 
@@ -331,20 +343,28 @@ const styles = StyleSheet.create({
   },
   containerEps:{
     zIndex: -1,
-    width: width * 0.9,
+    width: width * 1,
+    alignItems: "center",
+    justifyContent: "center",
   },
   containerEpsAll:{
     
   
     alignItems: "flex-start",
-    width: width * 0.9,
+    width: width * 0.98,
     height: "auto",
-    backgroundColor: "rgb(7, 32, 46)",
+    backgroundColor: "rgb(0, 53, 66)",
     borderRadius: 8,
     marginBottom: 5,
     padding: 10,
   },
+  textoEps:{
+   zIndex: -1,
+   
+   
+  },
   textEps:{
+    marginLeft: 10,
     fontWeight: "bold",
     fontSize: 18,
     marginTop: 5,
@@ -377,7 +397,10 @@ const styles = StyleSheet.create({
   imageCapaEps:{ 
     width: 130,
     height: 80,
-    borderRadius: 8,
+    borderTopStartRadius: 8,
+    borderTopEndRadius: 8,
+ 
+    
 
   },
 });
