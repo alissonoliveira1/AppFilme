@@ -3,7 +3,6 @@ import { useRouter } from 'expo-router';
 import {
   Text,
   View,
-  StatusBar,
   ScrollView,
   SafeAreaView,
   Image,
@@ -151,7 +150,7 @@ const styles = StyleSheet.create({
   },
   container2: {
     flex: 1,
-    backgroundColor: 'rgb(0, 63, 82)',
+    backgroundColor: "#002d37",
   },
   horizontalScroll: {
     marginTop: 10,
