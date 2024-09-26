@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
+import { BoxShadow } from 'react-native-shadow';
 import {
   Text,
   View,
@@ -30,9 +31,20 @@ export default function Index() {
   const router = useRouter();
   const destaque = movies.slice(0, 1);
   const id = destaque.map((movie) => movie.id);
-  console.log(id);
+  
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const API_KEY = "9f4ef628222f7685f32fc1a8eecaae0b";
+  const shadowOpt = {
+    width: width * 0.90,
+    height: 400,
+    color: "#181c44",
+    border: 100,
+    radius: 10,
+    opacity: 1,
+    
+    x: 0,
+    y: 0,
+  };
   useEffect(() => {
     const getMovies = async () => {
       try {
@@ -62,6 +74,7 @@ export default function Index() {
         ])
        
         setLoading(false);
+      
         setMovies(desenhoResponse.data.results);
         setMovieAcaoAventura(acaoeAvenResponse.data.results);
         setMovieTerror(terrorResponse.data.results);
@@ -91,11 +104,11 @@ export default function Index() {
 
   return (
     <SafeAreaView style={styles.container2}>
-      <ScrollView>
+      <ScrollView >
         <View style={styles.container}>
           {destaque.map((movie) => (
             <View style={styles.imageContainer2} key={movie.id}>
-            
+              <BoxShadow setting={shadowOpt}> 
                 <Image
                   id="img"
                   style={styles.image2}
@@ -103,6 +116,7 @@ export default function Index() {
                     uri: `https://image.tmdb.org/t/p/original/${movie.poster_path}`,
                   }}
                 />
+                </BoxShadow>
                  <View style={styles.containerButtonPrincipal}>
                  <View >
             <View style={styles.vwImg}>
@@ -112,6 +126,7 @@ export default function Index() {
                 <Text style={styles.text}>{movie.name}</Text>
               )}
             </View>
+            <View><Text></Text></View>
           </View>
                   <View style={styles.containerbutton2}>
                   <View style={styles.buttoninfo}>
@@ -212,7 +227,7 @@ const styles = StyleSheet.create({
   },
   container2: {
     flex: 1,
-    backgroundColor: "#002d37",
+    backgroundColor: "#010318",
   },
   horizontalScroll: {
     marginTop: 10,

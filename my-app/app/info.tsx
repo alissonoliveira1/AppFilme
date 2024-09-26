@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useGlobalSearchParams } from "expo-router";
 import api from "./services";
+import { BoxShadow } from 'react-native-shadow';
 import {
   Text,
   View,
@@ -40,6 +41,17 @@ export default function Info() {
   }>({});
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
 
+  const shadowOpt = {
+    width: width,
+    height: 20,
+    color: "#030624",
+    border: 100,
+    radius: 10,
+    opacity: 1,
+    
+    x: 0,
+    y: 0,
+  };
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -103,15 +115,17 @@ export default function Info() {
   };
 
   const renderEps = ({ item }: { item: any }) => (
-    <TouchableOpacity>
+    <TouchableOpacity style={{alignItems:'center'}}>
       <View style={styles.containerEpsAll}>
         <View style={styles.viewCapaEps}>
+       
           <Image
             source={{
               uri: `https://image.tmdb.org/t/p/w500${item.still_path}`,
             }}
             style={styles.imageCapaEps}
           />
+          
           <View>
             <Text style={styles.nameEpsAll}>
               {item.episode_number}. {item.name}
@@ -138,15 +152,22 @@ export default function Info() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollContainer}>
+    <FlatList
+      data={epsode}
+      keyExtractor={(item) => item.id.toString()}
+      renderItem={renderEps}
+      ListEmptyComponent={<Text>Nenhuma temporada encontrada.</Text>}
+      ListHeaderComponent={
         <View>
           <Image
             source={{
-              uri: `https://image.tmdb.org/t/p/w500${dados.backdrop_path}`,
+              uri: `https://image.tmdb.org/t/p/w500${dados.poster_path}`,
             }}
             style={styles.image}
           />
+           <BoxShadow setting={shadowOpt}> 
           <View style={styles.containerLogo}>
+           
             <View style={styles.VwLogo}>
               {logoUrl !== null ? (
                 <Image source={{ uri: logoUrl }} style={styles.logo} />
@@ -154,13 +175,14 @@ export default function Info() {
                 <Text style={styles.text}>{dados.name}</Text>
               )}
             </View>
+           
           </View>
+          </BoxShadow>
           <View style={styles.info}>
             <Text style={styles.textTemps}>
               {dados.number_of_seasons} temporadas {ano}
             </Text>
           </View>
-
           <View style={styles.ViewOverVW}>
             <Text style={styles.textOverVW}>{dados.overview}</Text>
           </View>
@@ -175,36 +197,33 @@ export default function Info() {
           <View style={styles.textoEps}>
             <Text style={styles.textEps}>Episodios</Text>
           </View>
-
-          <FlatList
-            data={epsode}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={renderEps}
-            ListEmptyComponent={<Text>Nenhuma temporada encontrada.</Text>}
-            scrollEnabled={true}
-          />
+        
         </View>
-      </ScrollView>
+      }
+      scrollEnabled={true}
+      nestedScrollEnabled={true}
+    />
+  
 
-      {isPressed && (
-        <View style={styles.containerTemp3}>
-          <FlatList
-            data={seasons}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={renderSeason}
-            ListEmptyComponent={<Text>Nenhuma temporada encontrada.</Text>}
-            scrollEnabled={true}
-          />
-        </View>
-      )}
-    </SafeAreaView>
+    {isPressed && (
+      <View style={styles.containerTemp3}>
+        <FlatList
+          data={seasons}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderSeason}
+          ListEmptyComponent={<Text>Nenhuma temporada encontrada.</Text>}
+          scrollEnabled={true}
+        />
+      </View>
+    )}
+  </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#002d37",
+    backgroundColor: "#010318",
   },
   scrollContainer: {
     flex: 1,
@@ -230,7 +249,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: width * 0.98,
     height: 50,
-    backgroundColor: "rgb(7, 32, 46)",
+    backgroundColor: "rgb(27, 40, 48)",
     borderRadius: 8,
   },
   textButton: {
@@ -239,7 +258,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   logo: {
-    width: 200,
+    width: width * 0.9,
     height: 100,
     resizeMode: "contain",
   },
@@ -265,7 +284,10 @@ const styles = StyleSheet.create({
   },
   image: {
     width: width,
-    height: width * 0.55,
+    height: 350,
+    resizeMode: "cover",
+    
+    
   },
   info: {
     marginTop: 50,
@@ -286,6 +308,7 @@ const styles = StyleSheet.create({
   textOverVW: {
     color: "#e4e4e4",
     fontSize: 16,
+    
   },
   textoEps: {
     width: width,
@@ -340,8 +363,18 @@ const styles = StyleSheet.create({
   },
   containerEpsAll: {
     backgroundColor: "#003c4e",
+    width: width * 0.98,
     padding: 10,
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
     marginBottom: 10,
     borderRadius: 8,
+   
   },
+  epsVw: {
+
+   width: '100%' ,
+    alignItems: "center",
+    justifyContent: "center",
+  },  
 });
